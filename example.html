@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Particle Life</title>
+    <style>
+        canvas {
+            border: 1px dashed black;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="life" width="500" height="500"></canvas>
+
+<script>
+
+    //Grab Canvas
+
+    let canvas = document.querySelector("#life");
+    let c = canvas.getContext('2d');
+
+    //Text
+
+    c.font = "bold 50pt Calibri";
+    c.fillStyle = "#F00";
+
+    c.fillText("Hello World!",20,40);
+    c.strokeText("Hello World!",20,40);
+
+    c.fillStyle = "#00F";
+
+    c.fillText("Hello World!",20,90);
+
+    let metrics = c.measureText("Hello World!");
+
+    console.log(metrics);
+
+    c.fillStyle = "rgba(0,255,0,.5)";
+
+    c.fillText("Hello World!",30,110);
+
+    //Rectangles
+    c.globalAlpha = 0.5;
+
+    c.fillStyle = "red";
+    c.fillRect(0,200,100,100);
+    c.fillStyle = "green";
+    c.fillRect(50,250,100,100);
+    c.fillStyle = "blue";
+    c.fillRect(100,300,100,100);
+
+    c.strokeStyle = "black";
+    c.strokeRect(0,200,200,200);
+
+</script>
+
+</body>
+</html>
