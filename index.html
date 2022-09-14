@@ -8,12 +8,13 @@
     <style>
         canvas {
             border: 1px dashed black;
+            background: slategrey;
         }
     </style>
 </head>
 <body>
 
-<canvas id="life" width="500" height="500"></canvas>
+<canvas id="life" width="1000" height="1000"></canvas>
 
 <script>
 
@@ -22,72 +23,172 @@
     let canvas = document.querySelector("#life");
     let c = canvas.getContext('2d');
 
-    let draw = (x,y,color,size) => {
+    // Draw a single atom
+    let draw = (x, y, color, size) => {
         c.fillStyle = color;
-        c.fillRect(x,y,size,size);
+        c.fillRect(x, y, size, size);
     }
 
     let atoms = [];
 
-    let atom = (x,y,c) => {
+    // an atom is represented by an object placed at a specific spot with a color, and a base vector of 0 (no movement)
+    let atom = (x, y, c) => {
         return {
-            x:x, y:y,
-            color:c,
-            vx:0,vy:0
+            x: x,
+            y: y,
+            color: c,
+            vx: 0,
+            vy: 0,
         };
     }
 
+
     let randomCoord = () => {
-        return (Math.random() * 400) + 50;
+        return (Math.random() * 900) + 50;
     }
 
+    // create a certain number of atoms and put each into the array of atoms
+    // returns the group of atoms that was created 
+    // groups based on color
     let create = (number,color) => {
         let group = [];
-        for (let i=0; i<number; i++) {
-            let a = atom(randomCoord(),randomCoord(),color);
+        for (let i = 0; i < number; i++) {
+            let a = atom(randomCoord(), randomCoord(), color);
             group.push(a);
             atoms.push(a);
         }
         return group;
     }
 
+    // implements how groups of atoms interact with each other
+    // g is pull towards/away from one another
+    //
     let rule = (group1, group2, g) => {
-        for (let i=0; i<group1.length; i++) {
-            let fx=0;
-            let fy=0;
+
+        // change size
+        // change color
+        // change opacity
+
+
+        // loops through first group
+        for (let i = 0; i < group1.length; i++) {
+            // set forces in x and y direction to 0
+            let fx = 0;
+            let fy = 0;
+            // represents a single atom in group1
             let a = group1[i];
-            for (let j=0; j<group2.length; j++) {
+
+            // loops through second group
+            for (let j = 0; j < group2.length; j++) {
+                // represents a single atom in group2
                 let b = group2[j]; 
+                // calculate distance between group1 atom and group2 atom... pythagorean theorem
                 let dx = a.x - b.x;
                 let dy = a.y - b.y;
                 let d = Math.sqrt( dx**2 + dy**2 );
+
+                // if distance is less than 80 but greater than 0 (no negative distance)
+                // if atom1 and atom2 are within 80 pixels away from eachother...
                 if (d > 0 && d < 80) {
+                    // we are applying force based on the gravitational pull (parameter) and the distance we just calculated
                     let f = g / d;
+                    // apply this force in both x and y directions
                     fx += f * dx;
                     fy += f * dy;
                 }
             }
+            // apply forces to each atom in group one
             a.vx = (a.vx + fx) * .5;
             a.vy = (a.vy + fy) * .5;
+
+            
+            // set new position based on movement vector
+            if (a.x + a.vx >= 990 || a.x + a.vx <= 10) {
+                a.vx *= -1;
+            } 
+            
+            if (a.y + a.vy >= 990 || a.y + a.vy <= 10) {
+                a.vy *= -1;
+            } 
+            
             a.x += a.vx;
             a.y += a.vy;
+            
         }
     }
 
-    let green = create(100,"green");
+    let green = create(400,"palegreen");
+    let red = create(400, "maroon");
+    let pink = create(400, "palevioletred");
+    let blue = create(400, "mediumturquoise");
 
     let drawAll = () => {
-        for (i in atoms) draw(atoms[i].x, 
-                          atoms[i].y, 
-                          atoms[i].color,
-                          3);
+        for (i in atoms) {
+            draw(atoms[i].x, atoms[i].y, atoms[i].color, 5);
+        }
     }
 
     let loop = () => {
         //Update Model
-        rule(green,green,-.05);
+
+
+        //! scenario 1: dancing green
+
+        // rule(red, red, .2);
+        // rule(pink, pink, .3);
+        // rule(blue, blue, .5);
+        // rule(green, green, -2);
+
+
+        //! scenario 2: partners
+
+        // rule(green, green, -.5);
+        // rule(green, red, .8);
+        // rule(red, green, -.5);
+
+        // rule(blue, blue, -.5);
+        // rule(blue, pink, .8);
+        // rule(pink, blue, -.6);
+
+
+        //! scenario 3: keep away from pink
+
+        // rule(pink, green, 2);
+        // rule(pink, red, 2);
+        // rule(pink, blue, 2);
+
+        // rule(pink, pink, -7);
+
+        // rule(red, red, 1);
+        // rule(blue, blue, 1);
+        // rule(green, green, 1);
+
+        // rule(green, pink, 2);
+        // rule(blue, pink, 2);
+        // rule(red, pink, 2);
+
+
+        //! scenario 4: a lot
+
+        // rule(red, pink, -2);
+        // rule(green, red, 2);
+        // rule(blue, red, 2);
+
+        // rule(pink, pink, -.2);
+        // rule(blue, blue, -.2);
+        // rule(green, green, -.05);
+        // rule(red, red, -.3);
+
+        // rule(red, green, 3);
+        // rule(green, blue, 1);
+
+        // rule(green, pink, 2);
+        
+
+        //! RULE: get rid of clearRect() so it paints 
         //Clear screen
-        c.clearRect(0,0,500,500);
+        c.clearRect(0,0,1000,1000);
+
         drawAll();
         requestAnimationFrame(loop);
     }
