@@ -49,7 +49,7 @@
 
 
     let randomCoord = () => {
-        return (Math.random() * 900) + 50;
+        return (Math.random() * 980) + 10;
     }
 
     // create a certain number of atoms and put each into the array of atoms
@@ -125,7 +125,7 @@
 
     let drawAll = () => {
         for (i in atoms) {
-            draw(atoms[i].x, atoms[i].y, atoms[i].color, 5);
+            draw(atoms[i].x, atoms[i].y, atoms[i].color, 4);
         }
     }
 
@@ -237,28 +237,28 @@
 
         //! scenario 4: a lot
 
-        rule(red, pink, -2);
-        rule(green, red, 2);
-        rule(blue, red, 2);
+        // rule(red, pink, -2);
+        // rule(green, red, 2);
+        // rule(blue, red, 2);
 
-        rule(pink, pink, -.2);
-        rule(blue, blue, -.2);
-        rule(green, green, -.05);
-        rule(red, red, -.3);
+        // rule(pink, pink, -.2);
+        // rule(blue, blue, -.2);
+        // rule(green, green, -.05);
+        // rule(red, red, -.3);
 
-        rule(red, green, 3);
-        rule(green, blue, 1);
+        // rule(red, green, 3);
+        // rule(green, blue, 1);
 
-        rule(green, pink, 2);
+        // rule(green, pink, 2);
         
 
         //! scenario: get rid of clearRect() so it paints 
         //Clear screen
-        // c.clearRect(0,0,1000,1000);
+        c.clearRect(0,0,1000,1000);
 
-        changeHue(red, .6);
-        changeHue(green, .3);
-        changeHue(blue, 1);
+        // changeHue(red, .6);
+        // changeHue(green, .3);
+        // changeHue(blue, 1);
         changeLightness(red, .5);
 
         drawAll();
