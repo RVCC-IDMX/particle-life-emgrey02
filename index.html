@@ -28,6 +28,7 @@
     let canvas = document.querySelector("#life");
     let c = canvas.getContext('2d');
 
+
     // Draw a single atom
     let draw = (x, y, color, size) => {
         c.fillStyle = color;
@@ -103,12 +104,12 @@
             a.vy = (a.vy + fy) * .5;
 
             
-            // set new position based on movement vector
-            if (a.x + a.vx >= 990 || a.x + a.vx <= 10) {
+            // set new position based on movement vector (with boundaries)
+            if (a.x + a.vx >= 1000 || a.x + a.vx <= 0) {
                 a.vx *= -1;
             } 
             
-            if (a.y + a.vy >= 990 || a.y + a.vy <= 10) {
+            if (a.y + a.vy >= 1000 || a.y + a.vy <= 0) {
                 a.vy *= -1;
             } 
             
@@ -118,14 +119,65 @@
         }
     }
 
-    let green = create(400,"hsl(120, 93%, 79%)");
-    let red = create(400, "hsl(0, 100%, 25%)");
-    let pink = create(400, "hsl(340, 60%, 65%)");
-    let blue = create(400, "hsl(178, 60%, 55%)");
+    let green = create(500,"hsl(120, 93%, 79%)");
+    let red = create(500, "hsl(0, 100%, 25%)");
+    let pink = create(500, "hsl(340, 60%, 65%)");
+    let blue = create(500, "hsl(178, 60%, 55%)");
+
+    canvas.addEventListener('mousemove', (e) => {
+        let mousePos = getMousePos(e);
+        let allDots = [green, red, pink, blue];
+        let fx = 0;
+        let fy = 0;
+        allDots.forEach((group) => {
+            for (let i = 0; i < group.length; i++) {
+                let dx = mousePos.x - group[i].x;
+                let dy = mousePos.y - group[i].y;
+                let d = Math.sqrt( dx**2 + dy**2 );
+
+                // if atom is within 100px of mouse
+                if (d > 0 && d < 100) {
+                    // we are applying force based on the gravitational pull (parameter) and the distance we just calculated
+                    let f = -2 / d;
+                    // apply this force in both x and y directions
+                    fx += f * dx;
+                    fy += f * dy;
+
+                    group[i].vx = (group[i].vx + fx) * .5;
+                    group[i].vy = (group[i].vy + fy) * .5;
+                    // console.log(group[i].vx, group[i].vy);
+
+
+                    // set new position based on movement vector (with boundaries)
+                    if (group[i].x + group[i].vx >= 1000 || group[i].x + group[i].vx <= 0) {
+                        group[i].vx *= -1;
+                    } 
+                    
+                    if (group[i].y + group[i].vy >= 1000 || group[i].y + group[i].vy <= 0) {
+                        group[i].vy *= -1;
+                    } 
+
+                    group[i].x += group[i].vx;
+                    group[i].y += group[i].vy;
+                }
+                
+            }
+        })
+    })
+
+    let getMousePos = (e) => {
+        let rect = canvas.getBoundingClientRect();
+        let x = e.clientX - rect.left;
+        let y = e.clientY - rect.top;
+        return {
+            x: x,
+            y: y,
+        }
+    }
 
     let drawAll = () => {
         for (i in atoms) {
-            draw(atoms[i].x, atoms[i].y, atoms[i].color, 4);
+            draw(atoms[i].x, atoms[i].y, atoms[i].color, 5);
         }
     }
 
@@ -193,12 +245,10 @@
             color[i].color = finalColorString;
         }
     }
-
     
 
     let loop = () => {
         //Update Model
-
 
         //! scenario 1: dancing green
 
@@ -207,15 +257,18 @@
         // rule(blue, blue, .5);
         // rule(green, green, -2);
 
-        //! scenario 2: partners
+        //! scenario 2: blue/green party
 
-        // rule(green, green, -.5);
+        // rule(green, green, -.8);
         // rule(green, red, .8);
         // rule(red, green, -.5);
 
-        // rule(blue, blue, -.5);
+        // rule(blue, blue, -.8);
         // rule(blue, pink, .8);
         // rule(pink, blue, -.6);
+
+        // rule(green, blue, -1);
+        // rule(blue, green, 1);
 
 
         //! scenario 3: keep away from pink
@@ -224,15 +277,15 @@
         // rule(pink, red, 2);
         // rule(pink, blue, 2);
 
+        // rule(green, pink, 1);
+        // rule(blue, pink, 2);
+        // rule(red, pink, 3);
+
         // rule(pink, pink, -7);
 
         // rule(red, red, 1);
         // rule(blue, blue, 1);
         // rule(green, green, 1);
-
-        // rule(green, pink, 2);
-        // rule(blue, pink, 2);
-        // rule(red, pink, 2);
 
 
         //! scenario 4: a lot
@@ -257,9 +310,12 @@
         c.clearRect(0,0,1000,1000);
 
         // changeHue(red, .6);
-        // changeHue(green, .3);
+        // changeHue(green, 2);
         // changeHue(blue, 1);
-        changeLightness(red, .5);
+        // changeLightness(red, .5);
+
+        // changeLightness(pink, .3);
+        // changeHue(pink, 3);
 
         drawAll();
         requestAnimationFrame(loop);
